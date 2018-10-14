@@ -2,9 +2,9 @@
 <div class="border: 0">
 
 <div class="col mb-4">
-      <button type="button" class="btn btn-primary">
-      SELECT ALL 
-    <span class="badge"><input class="mr-5 ml-5" type="checkbox" id="mark-all" @click="selectAll" :checked="areAllSelected"></span>
+      <button type="button" class="btn btn-primary"  
+      id="mark-all" @click="showAll !== showAll">
+      Show
     </button>
     </div>
 
@@ -14,9 +14,9 @@
         </div>
 
           <div class="card-body p-0 text-left">
-            <ul class="list">
+            <ul class="list" v-if="showAll">
 
-                <li class="list-item" v-for="(task,index) in tasks" :key="index" :class="{ done: isChecked(task) }">
+                <li class="list-item" v-for="(task, key,index) in tasks" :key="index" :class="{ done: isChecked(task) }">
 
                     <input type="checkbox" class="checkbox" @click="check" v-model="task.checked">
 
@@ -26,16 +26,21 @@
                      v-model="task.text">
 
                     <!-- Label for Showing each task in Tasks Array -->
-                    <label for="checkbox" v-if="task !== editingTask && filters !== 'All' && filters !== 'Active' && filters !== 'Completed' " @dblclick="editTask(task)">{{ task.text }}</label>
+                    <label for="checkbox" v-if="task !== editingTask && filters !== 'All' && filters !== 'Active' && filters !== 'Completed' " @dblclick="editTask(task)">
+                      {{ task.text }}
+                    </label>
 
-                    <label for="checkbox" v-if="task !== editingTask && filters === 'All' "  @dblclick="editTask(task)">
-                      {{  task.text  }}  All                
+                    <label for="checkbox" v-if="task !== editingTask && filters === 'All'"  @dblclick="editTask(task)">
+                      {{ task.text }}           
                       </label>
-                    <label for="checkbox" v-if="task !== editingTask && filters === 'Active' " @dblclick="editTask(task)">
-                      {{ task.text }}  Active
+
+                    <label for="checkbox" v-if="task !== editingTask && filters === 'Active' && task.checked !== true"  @dblclick="editTask(task)">
+                     {{ task.text }}
                       </label>
-                    <label for="checkbox" v-if="task !== editingTask && filters === 'Completed'" @dblclick="editTask(task)">
-                      {{ task.text }} Completed
+
+                    <label for="checkbox" v-if="task !== editingTask && filters === 'Completed' && task.checked !== false"  @dblclick=" editTask(task)">
+                      {{ task.text }}
+           
                     </label>
 
                     <!-- Remove Tasks from Tasks Array -->
@@ -51,7 +56,7 @@
               <div class="row">
                 <div class="col">
                   <button class="btn btn-link" disabled>
-                  {{ tasks.length === 1 ? tasks.length +  ' Item Left' :  tasks.length + ' Items Left' }}
+                  {{ tasks.length === 1 ? tasks.length + ' Item Left' :  tasks.length + ' Items Left' }}
                   </button>               
                 </div>
 
@@ -66,7 +71,9 @@
 
                 <!-- Clear Completed Tasks -->
                 <div class="col">
-                    <button class="btn btn-link" @click="clearList">Clear Completed</button>
+                    <button class="btn btn-link"
+                      v-if="areAllSelected === true" @click="clearList">
+                      Clear Completed</button>
                 </div>
                
               </div>
@@ -80,18 +87,18 @@
 export default {
   data() {
     return {
+      showAll: true,
       filters: "",
       newTask: "",
       tasks: [
         {
-          text: "My First Todo.",
+          text: "My First Todo",
           checked: false
         }
       ],
       editingTask: {}
     };
   },
-
   computed: {
     areAllSelected() {
       return (
@@ -101,12 +108,6 @@ export default {
       );
     }
   },
-  filters: {
-    active(task) {
-      return task.checked;
-    }
-  },
-
   methods: {
     addTask() {
       let task = this.newTask.trim();
@@ -125,7 +126,7 @@ export default {
       this.filters = "Completed";
     },
     removeTask(task) {
-      var index = this.tasks.indexOf(task);
+      let index = this.tasks.indexOf(task);
       this.tasks.splice(index, 1);
     },
 
@@ -140,22 +141,12 @@ export default {
       }
     },
 
-    clearList() {
-    this.tasks = []
+    clearList(task) {
+      let index = this.tasks.indexOf(task);
+      this.tasks.splice(index.length);
     },
-
-    showAllTodos() {
-      return this.tasks;
-    },
-    showActiveTodos(tasks) {
-      this.tasks.checked !== true ? this.tasks.checked : "";
-    },
-    showCompletedTodos(task) {
-      return this.task;
-    },
-
     selectAll(task) {
-      var targetValue = this.areAllSelected ? false : true;
+      let targetValue = this.areAllSelected ? false : true;
       for (var i = 0; i < this.tasks.length; i++) {
         this.tasks[i].checked = targetValue;
       }
@@ -168,9 +159,6 @@ export default {
     isChecked(task) {
       return task.checked;
     }
-  },
-  mounted() {
-    console.log(this.tasks);
   },
   directive: ("focus",
   {
