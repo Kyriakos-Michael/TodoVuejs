@@ -3,9 +3,7 @@
 
 <div class="col mb-4">
       <button type="button" class="btn btn-primary"  
-      id="mark-all" @click="showAll !== showAll">
-      Show
-    </button>
+      id="mark-all" @click="selectAll"><i class="fas fa-arrow-down"></i></button>
     </div>
 
       <div class="card shadow-lg" id="todo">
@@ -16,7 +14,7 @@
           <div class="card-body p-0 text-left">
             <ul class="list" v-if="showAll">
 
-                <li class="list-item" v-for="(task, key,index) in tasks" :key="index" :class="{ done: isChecked(task) }">
+                <li class="list-item" v-for="(task, key,index) in tasks" :key="index" :class="{ done : isChecked(task) }">
 
                     <input type="checkbox" class="checkbox" @click="check" v-model="task.checked">
 
@@ -56,7 +54,7 @@
               <div class="row">
                 <div class="col">
                   <button class="btn btn-link" disabled>
-                  {{ tasks.length === 1 ? tasks.length + ' Item Left' :  tasks.length + ' Items Left' }}
+                  {{ tasks.length === 1 ? '1 Item Left' :   tasks.length + ' Items Left'}}
                   </button>               
                 </div>
 
@@ -147,7 +145,7 @@ export default {
     },
     selectAll(task) {
       let targetValue = this.areAllSelected ? false : true;
-      for (var i = 0; i < this.tasks.length; i++) {
+      for (let i = 0; i < this.tasks.length; i++) {
         this.tasks[i].checked = targetValue;
       }
     },
@@ -160,7 +158,7 @@ export default {
       return task.checked;
     }
   },
-  directive: ("focus",
+  directive: ("auto-focus",
   {
     bind: function() {
       Vue.nextTick(
